@@ -41,21 +41,21 @@ BlobStore.prototype.createReadStream = function (opts) {
   var name = typeof opts === 'string' ? opts : opts.key
   var subdir = filenamePrefix(name, 7)
   var store = this._getStore(subdir)
-  return store.createReadStream(name)
+  return store.createReadStream(opts)
 }
 
 BlobStore.prototype.exists = function (opts, done) {
   var name = typeof opts === 'string' ? opts : opts.key
   var subdir = filenamePrefix(name, 7)
   var store = this._getStore(subdir)
-  return store.exists(name, done)
+  return store.exists(opts, done)
 }
 
 BlobStore.prototype.remove = function (opts, done) {
   var name = typeof opts === 'string' ? opts : opts.key
   var subdir = filenamePrefix(name, 7)
   var store = this._getStore(subdir)
-  return store.remove(name, done)
+  return store.remove(opts, done)
 }
 
 // TODO: opts to choose whether to use staging area
@@ -66,7 +66,7 @@ BlobStore.prototype.createWriteStream = function (opts, done) {
   var name = typeof opts === 'string' ? opts : (opts.name ? opts.name : opts.key)
 
   var stagingStore = this._getStore('staging')
-  var ws = stagingStore.createWriteStream(name)
+  var ws = stagingStore.createWriteStream(opts)
   ws.on('finish', onFinish)
   ws.on('error', onFinish)
   return ws
