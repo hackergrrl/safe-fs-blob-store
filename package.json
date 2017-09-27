@@ -1,0 +1,28 @@
+{
+  "name": "safe-fs-blob-store",
+  "description": "fs-blob-store with atomic writes and high file limits on windows",
+  "author": "Stephen Whitmore <sww@eight.net>",
+  "version": "0.0.0",
+  "repository": {
+    "url": "git://github.com/noffle/safe-fs-blob-store.git"
+  },
+  "homepage": "https://github.com/noffle/safe-fs-blob-store",
+  "bugs": "https://github.com/noffle/safe-fs-blob-store/issues",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js",
+    "lint": "standard"
+  },
+  "keywords": [],
+  "dependencies": {
+    "fs-blob-store": "^5.2.1",
+    "fs-walk": "0.0.1"
+  },
+  "devDependencies": {
+    "abstract-blob-store": "^3.2.0",
+    "standard": "~10.0.0",
+    "tape": "~4.6.2",
+    "tempy": "^0.2.1"
+  },
+  "license": "ISC"
+}
