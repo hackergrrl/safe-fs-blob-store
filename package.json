@@ -2,7 +2,7 @@
   "name": "safe-fs-blob-store",
   "description": "fs-blob-store with atomic writes and high file limits on windows",
   "author": "Stephen Whitmore <sww@eight.net>",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "repository": {
     "url": "git://github.com/noffle/safe-fs-blob-store.git"
   },
