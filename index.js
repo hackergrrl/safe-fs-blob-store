@@ -91,5 +91,6 @@ BlobStore.prototype.createWriteStream = function (opts, done) {
 
 // String, Number -> String
 function filenamePrefix (name, prefixLen) {
-  return name.substring(0, Math.min(prefixLen, name.lastIndexOf('.')))
+  var extLen = path.extname(name).length
+  return name.substring(0, Math.min(prefixLen, name.length - extLen))
 }
