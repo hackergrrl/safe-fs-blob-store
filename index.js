@@ -5,6 +5,7 @@ var path = require('path')
 var walk = require('fs-walk')
 var fs = require('fs')
 var mkdirp = require('mkdirp')
+var through = require('through2')
 
 function noop () {}
 
@@ -59,21 +60,19 @@ BlobStore.prototype.remove = function (opts, done) {
 }
 
 // TODO: opts to choose whether to use staging area
-BlobStore.prototype.createWriteStream = function (opts, done) {
+BlobStore.prototype.createWriteStream = function (opts) {
   var self = this
-  done = done || noop
 
   var name = typeof opts === 'string' ? opts : (opts.name ? opts.name : opts.key)
 
   var stagingStore = this._getStore('staging')
   var ws = stagingStore.createWriteStream(opts)
-  ws.on('finish', onFinish)
-  ws.on('error', onFinish)
-  return ws
+  var t = through(function (chunk, _, next) { next(null, chunk) }, onFlush)
+  t.pipe(ws)
 
-  function onFinish (err) {
-    if (err) return done(err)
+  return t
 
+  function onFlush (flush) {
     var subdir = filenamePrefix(name, 7)
 
     // write result to destination
@@ -81,10 +80,8 @@ BlobStore.prototype.createWriteStream = function (opts, done) {
     var to = path.join(self._dir, subdir, name)
 
     mkdirp(path.join(self._dir, subdir), function (err) {
-      if (err) return done(err)
-      fs.rename(from, to, function (err) {
-        done(err, { key: name })
-      })
+      if (err) return flush(err)
+      fs.rename(from, to, flush)
     })
   }
 }
