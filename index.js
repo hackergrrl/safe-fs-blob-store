@@ -39,10 +39,20 @@ BlobStore.prototype._list = function (cb) {
 }
 
 BlobStore.prototype.createReadStream = function (opts) {
-  var name = typeof opts === 'string' ? opts : opts.key
-  var subdir = filenamePrefix(name, 7)
-  var store = this._getStore(subdir)
-  return store.createReadStream(opts)
+  var self = this
+  var t = through()
+
+  this.exists(opts, function (err, exists) {
+    if (err) return t.emit('error', err)
+    if (!exists) return t.emit('error', { notFound: true })
+
+    var name = typeof opts === 'string' ? opts : opts.key
+    var subdir = filenamePrefix(name, 7)
+    var store = self._getStore(subdir)
+    store.createReadStream(opts).pipe(t)
+  })
+
+  return t
 }
 
 BlobStore.prototype.exists = function (opts, done) {
