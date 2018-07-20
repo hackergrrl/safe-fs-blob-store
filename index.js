@@ -60,8 +60,9 @@ BlobStore.prototype.remove = function (opts, done) {
 }
 
 // TODO: opts to choose whether to use staging area
-BlobStore.prototype.createWriteStream = function (opts) {
+BlobStore.prototype.createWriteStream = function (opts, cb) {
   var self = this
+  cb = cb || noop
 
   var name = typeof opts === 'string' ? opts : (opts.name ? opts.name : opts.key)
 
@@ -80,8 +81,15 @@ BlobStore.prototype.createWriteStream = function (opts) {
     var to = path.join(self._dir, subdir, name)
 
     mkdirp(path.join(self._dir, subdir), function (err) {
-      if (err) return flush(err)
-      fs.rename(from, to, flush)
+      if (err) {
+        cb(err)
+        flush(err)
+        return
+      }
+      fs.rename(from, to, function (err) {
+        cb(err, { key: name })
+        flush(err)
+      })
     })
   }
 }
