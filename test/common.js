@@ -17,3 +17,5 @@ var common = {
 
 var abstractBlobTests = require('abstract-blob-store/tests')
 abstractBlobTests(test, common)
+
+module.exports = common
