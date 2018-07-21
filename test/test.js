@@ -10,7 +10,7 @@ var common = {
     cb(null, store)
   },
   teardown: function (t, store, blob, cb) {
-    rimraf.sync(store._dir)
+    rimraf.sync(store.path)
     cb()
   }
 }
