@@ -91,3 +91,28 @@ test('check if a blob exists', function (t) {
     })
   })
 })
+
+test('check readme example works', function (t) {
+  common.setup(test, function (err, store) {
+    t.notOk(err, 'no setup err')
+    var ws = store.createWriteStream({
+      key: 'some/path/file.txt'
+    })
+
+    ws.end('hello world\n')
+
+    ws.on('finish', function () {
+      var rs = store.createReadStream({
+        key: 'some/path/file.txt'
+      })
+
+      rs.pipe(concat(function (file) {
+        t.equal(file.toString(), 'hello world\n', 'file matches')
+        common.teardown(test, store, file, function (err) {
+          t.error(err)
+          t.end()
+        })
+      }))
+    })
+  })
+})
