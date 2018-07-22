@@ -16,4 +16,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Can now handle file keys that include subdirectories
 - Uses more robust [fs-write-stream-atomic](https://github.com/npm/fs-write-stream-atomic) for atomic writes.
 
-[2.0.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v2.0.0...v1.0.0
+[2.0.0]: https://github.com/noffle/safe-fs-blob-store/compare/v1.0.0...v2.0.0
