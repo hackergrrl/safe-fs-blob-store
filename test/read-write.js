@@ -55,7 +55,7 @@ test('reading a blob that does not exist', function (t) {
 
     rs.on('error', function (e) {
       t.ok(e, 'got a read stream err')
-      t.ok(e.notFound, 'error reports not found')
+      t.equal(e.code, 'ENOENT', 'correct error code')
       common.teardown(test, store, undefined, function (err) {
         t.error(err)
         t.end()
