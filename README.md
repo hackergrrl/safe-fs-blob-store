@@ -28,7 +28,7 @@ var ws = blobs.createWriteStream({
 
 ws.end('hello world\n')
 
-ws.on('end', function () {
+ws.on('finish', function () {
   var rs = blobs.createReadStream({
     key: 'some/path/file.txt'
   })
