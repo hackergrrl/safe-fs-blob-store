@@ -4,7 +4,7 @@ var Readable = require('stream').Readable
 
 var common = require('./common')
 
-test('_list lists keys', function (t) {
+test('list() lists keys', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
     var filenames = ['hello.txt', 'deep/subdir/long-filename-test.js', 'subdir/filename.txt']
@@ -18,7 +18,7 @@ test('_list lists keys', function (t) {
       t.error(err)
       t.ok(obj.key, 'blob has key')
       if (--pending > 0) return
-      store._list(onList)
+      store.list(onList)
     }
 
     function onList (err, keys) {
@@ -32,7 +32,7 @@ test('_list lists keys', function (t) {
   })
 })
 
-test('_list doesn\'t list keys from failed writes', function (t) {
+test('list() doesn\'t list keys from failed writes', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
     var filenames = ['hello.txt', 'deep/subdir/long-filename-test.js', 'subdir/filename.txt']
@@ -62,7 +62,7 @@ test('_list doesn\'t list keys from failed writes', function (t) {
         store.exists('somekey', function (err, exists) {
           if (err) return t.fail(err)
           t.equal(exists, false)
-          store._list(onList)
+          store.list(onList)
         })
       }, 200)
     }
