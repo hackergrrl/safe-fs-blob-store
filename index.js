@@ -42,6 +42,7 @@ BlobStore.prototype.createWriteStream = function (opts, cb) {
   opts.getTmpname = getTmpname
   opts.key = this._insertSubDirPrefix(opts.key)
   return AtomicStore.prototype.createWriteStream.call(this, opts, function (err, metadata) {
+    if (err) return cb(err)
     metadata.key = originalKey
     cb(err, metadata)
   })
