@@ -92,7 +92,7 @@ BlobStore.prototype._removeSubDirPrefix = function (key) {
   var prefixLen = this.subDirPrefixLen
   var parsed = path.parse(key)
   if (parsed.name.length <= prefixLen) return key
-  var dirs = parsed.dir.split('/')
+  var dirs = parsed.dir.split(path.sep)
   if (parsed.name.slice(0, prefixLen) !== dirs.pop()) return key
-  return path.join(dirs.join('/'), parsed.base)
+  return path.join(dirs.join(path.sep), parsed.base)
 }
