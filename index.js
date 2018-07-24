@@ -27,7 +27,7 @@ function getTmpname (filename) {
 function BlobStore (opts) {
   if (!(this instanceof BlobStore)) return new BlobStore(opts)
   if (typeof opts === 'string') opts = {path: opts}
-  this.subDirPrefixLen = opts.subDirPrefixLen || 7
+  this.subDirPrefixLen = opts.subDirPrefixLen || 2
   this.path = opts.path
   AtomicStore.call(this, opts)
 }
