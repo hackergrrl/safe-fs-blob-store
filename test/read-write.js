@@ -87,7 +87,6 @@ test('subdirs don\'t conflict with prefixes', function (t) {
   })
 })
 
-
 test('reading a blob that does not exist', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
