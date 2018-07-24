@@ -83,6 +83,8 @@ BlobStore.prototype.list = function (cb) {
   })
 }
 
+BlobStore.prototype._list = BlobStore.prototype.list
+
 BlobStore.prototype._insertSubDirPrefix = function (key) {
   var prefixLen = this.subDirPrefixLen
   var parsed = path.parse(key)
