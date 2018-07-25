@@ -10,8 +10,6 @@ var noop = function () {}
 
 // Random (but stable) postfix used to id tmp files (so they aren't listed)
 var TMP_POSTFIX = '.tmp-gxqIdUqEoqo'
-// Random (but stable) postfix used for subdirs
-var SUBDIR_POSTFIX = '.namespaced-qvVBOUqZFjs'
 
 function murmurhex () {
   var hash = MurmurHash3('')
@@ -88,16 +86,14 @@ BlobStore.prototype._list = BlobStore.prototype.list
 BlobStore.prototype._insertSubDirPrefix = function (key) {
   var prefixLen = this.subDirPrefixLen
   var parsed = path.parse(key)
-  if (parsed.name.length <= prefixLen) return key
-  var prefix = parsed.name.slice(0, prefixLen) + SUBDIR_POSTFIX
+  var prefix = parsed.name.slice(0, prefixLen)
   return path.join(parsed.dir, prefix, parsed.base)
 }
 
 BlobStore.prototype._removeSubDirPrefix = function (key) {
   var prefixLen = this.subDirPrefixLen
   var parsed = path.parse(key)
-  if (parsed.name.length <= prefixLen) return key
   var dirs = parsed.dir.split(path.sep)
-  if (!dirs.pop().endsWith(SUBDIR_POSTFIX)) return key
+  dirs.pop()
   return path.join(dirs.join(path.sep), parsed.base)
 }
