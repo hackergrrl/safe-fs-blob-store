@@ -15,6 +15,8 @@ additional features:
    FAT32 has a limit of ~65,000. This module transparently manages
    subdirectories from the prefixes of given keys to avoid hitting this limit as
    quickly.
+3. Adds a `list()` method which lists the key names of all the files in the
+   media store.
 
 ## Usage
 
@@ -26,8 +28,9 @@ var ws = blobs.createWriteStream({
   key: 'some/path/file.txt'
 })
 
-ws.write('hello world\n')
-ws.end(function() {
+ws.end('hello world\n')
+
+ws.on('finish', function () {
   var rs = blobs.createReadStream({
     key: 'some/path/file.txt'
   })
@@ -35,6 +38,14 @@ ws.end(function() {
   rs.pipe(process.stdout)
 })
 ```
+
+## API
+
+See https://github.com/maxogden/abstract-blob-store and in addition:
+
+### store.list(cb)
+
+Calls `cb` with `err, keys`, where `keys` is an array of string key names of the files in the store.
 
 ## License
 
