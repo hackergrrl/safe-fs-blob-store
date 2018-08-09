@@ -156,3 +156,33 @@ test('check readme example works', function (t) {
     })
   })
 })
+
+test('unicode characters in the key', function (t) {
+  common.setup(test, function (err, store) {
+    t.notOk(err, 'no setup err')
+
+    var key = 'deep/subdir/book-of-the- .txt'
+
+    var ws = store.createWriteStream({name: key}, function (err, blob) {
+      t.notOk(err, 'no blob write err')
+      t.ok(blob.key, 'blob has key')
+
+      var rs = store.createReadStream(key)
+
+      rs.on('error', function (e) {
+        t.false(e, 'no read stream err')
+        t.end()
+      })
+
+      rs.pipe(concat(function (file) {
+        t.equal(file.length, 6, 'blob length is correct')
+        common.teardown(test, store, blob, function (err) {
+          t.error(err)
+          t.end()
+        })
+      }))
+    })
+
+    from([Buffer.from('foo'), Buffer.from('bar')]).pipe(ws)
+  })
+})
