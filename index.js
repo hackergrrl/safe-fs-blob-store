@@ -40,7 +40,7 @@ BlobStore.prototype.createWriteStream = function (opts, cb) {
   if (opts.name && !opts.key) opts.key = opts.name
   var originalKey = opts.key
   opts.getTmpname = getTmpname
-  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
+  opts.key = this.keyToFilepath(opts.key)
   return AtomicStore.prototype.createWriteStream.call(this, opts, function (err, metadata) {
     if (err) return cb(err)
     metadata.key = originalKey
@@ -50,19 +50,19 @@ BlobStore.prototype.createWriteStream = function (opts, cb) {
 
 BlobStore.prototype.createReadStream = function (opts) {
   if (opts && typeof opts === 'string') opts = {key: opts}
-  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
+  opts.key = this.keyToFilepath(opts.key)
   return AtomicStore.prototype.createReadStream.call(this, opts.key)
 }
 
 BlobStore.prototype.exists = function (opts, cb) {
   if (typeof opts === 'string') opts = {key: opts}
-  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
+  opts.key = this.keyToFilepath(opts.key)
   return AtomicStore.prototype.exists.call(this, opts, cb)
 }
 
 BlobStore.prototype.remove = function (opts, cb) {
   if (typeof opts === 'string') opts = {key: opts}
-  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
+  opts.key = this.keyToFilepath(opts.key)
   return AtomicStore.prototype.remove.call(this, opts, cb)
 }
 
@@ -70,10 +70,10 @@ BlobStore.prototype.list = function (cb) {
   var names = []
   var self = this
   walk.files(this.path, function (basedir, filename, stat, next) {
-    var key = path.relative(self.path, path.join(basedir, filename))
+    var filepath = path.relative(self.path, path.join(basedir, filename))
     // Skip tmp files
-    if (key.endsWith(TMP_POSTFIX)) return next()
-    names.push(normalizeKey(self._removeSubDirPrefix(key)))
+    if (filepath.endsWith(TMP_POSTFIX)) return next()
+    names.push(self.filepathToKey(filepath))
     next()
   }, function (err) {
     if (err && err.code === 'ENOENT') cb(null, [])
@@ -97,12 +97,20 @@ BlobStore.prototype._removeSubDirPrefix = function (key) {
   return path.join(dirs.join(path.sep), parsed.base)
 }
 
-// Converts a filepath with platform-specific separators to use only forward slashes
+BlobStore.prototype.keyToFilepath = function (key) {
+  return this._insertSubDirPrefix(denormalizeKey(pruncateKey(key)))
+}
+
+BlobStore.prototype.filepathToKey = function (filepath) {
+  return normalizeKey(this._removeSubDirPrefix(filepath))
+}
+
+// Converts a filepath with platform-specific separators to a key (forward slashes separators)
 function normalizeKey (key) {
   return replaceAll(key, path.sep, '/')
 }
 
-// Converts a filepath containings forward slashes into platform-specific separators
+// Converts a key (forward slash separators) into platform-specific separators
 function denormalizeKey (key) {
   return replaceAll(key, '/', path.sep)
 }
@@ -118,4 +126,20 @@ function replaceAll (string, from, to) {
   }
   res += string
   return res
+}
+
+// prefix truncate a string to a length, "pruncate"
+function pruncate (string, maxLength) {
+  if (string.length > maxLength) {
+    var extra = string.length - maxLength
+    return string.substring(extra)
+  } else {
+    return string
+  }
+}
+
+function pruncateKey (key) {
+  return key.split('/')
+    .map(function (c) { return pruncate(c, 228) })
+    .join('/')
 }
