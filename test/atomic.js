@@ -20,9 +20,9 @@ test('interrupted write', function (t) {
     setTimeout(function () {
       store.exists('somekey', function (err, exists) {
         if (err) return t.fail(err)
-        t.equal(exists, false)
+        t.equal(exists, false, 'the key does not exist')
         common.teardown(test, store, null, function (err) {
-          t.error(err)
+          t.error(err, 'no teardown errors')
           t.end()
         })
       })

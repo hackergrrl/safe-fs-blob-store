@@ -10,8 +10,10 @@ var common = {
     cb(null, store)
   },
   teardown: function (t, store, blob, cb) {
-    rimraf.sync(store.path)
-    cb()
+    rimraf(store.path, function (err) {
+      if (err) console.log('test teardown error:', err)
+      cb()
+    })
   }
 }
 
