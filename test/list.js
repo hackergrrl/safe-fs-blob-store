@@ -23,7 +23,7 @@ test('list() lists keys', function (t) {
 
     function onList (err, keys) {
       t.error(err)
-      t.deepEqual(filenames.sort(), keys.sort(), 'keys in list are correct')
+      t.deepEqual(keys.sort(), filenames.sort(), 'keys in list are correct')
       common.teardown(test, store, null, function (err) {
         t.error(err)
         t.end()
