@@ -99,10 +99,23 @@ BlobStore.prototype._removeSubDirPrefix = function (key) {
 
 // Converts a filepath with platform-specific separators to use only forward slashes
 function normalizeKey (key) {
-  return key.replace(new RegExp(path.sep, 'g'), '/')
+  return replaceAll(key, path.sep, '/')
 }
 
 // Converts a filepath containings forward slashes into platform-specific separators
 function denormalizeKey (key) {
-  return key.replace(new RegExp('/', 'g'), path.sep)
+  return replaceAll(key, '/', path.sep)
+}
+
+// Replace all instances of 'from' in 'string' to 'to'
+function replaceAll (string, from, to) {
+  var res = ''
+  var at
+  while ((at = string.indexOf(from)) !== -1) {
+    res += string.substring(0, at)
+    res += to
+    string = string.substring(at + from.length)
+  }
+  res += string
+  return res
 }
