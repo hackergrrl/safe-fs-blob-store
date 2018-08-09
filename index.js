@@ -40,7 +40,7 @@ BlobStore.prototype.createWriteStream = function (opts, cb) {
   if (opts.name && !opts.key) opts.key = opts.name
   var originalKey = opts.key
   opts.getTmpname = getTmpname
-  opts.key = this._insertSubDirPrefix(opts.key)
+  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
   return AtomicStore.prototype.createWriteStream.call(this, opts, function (err, metadata) {
     if (err) return cb(err)
     metadata.key = originalKey
@@ -48,21 +48,21 @@ BlobStore.prototype.createWriteStream = function (opts, cb) {
   })
 }
 
-BlobStore.prototype.createReadStream = function (key) {
-  if (key && typeof key === 'object') return this.createReadStream(key.key)
-  key = this._insertSubDirPrefix(key)
-  return AtomicStore.prototype.createReadStream.call(this, key)
+BlobStore.prototype.createReadStream = function (opts) {
+  if (opts && typeof opts === 'string') opts = {key: opts}
+  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
+  return AtomicStore.prototype.createReadStream.call(this, opts.key)
 }
 
 BlobStore.prototype.exists = function (opts, cb) {
   if (typeof opts === 'string') opts = {key: opts}
-  opts.key = this._insertSubDirPrefix(opts.key)
+  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
   return AtomicStore.prototype.exists.call(this, opts, cb)
 }
 
 BlobStore.prototype.remove = function (opts, cb) {
   if (typeof opts === 'string') opts = {key: opts}
-  opts.key = this._insertSubDirPrefix(opts.key)
+  opts.key = this._insertSubDirPrefix(denormalizeKey(opts.key))
   return AtomicStore.prototype.remove.call(this, opts, cb)
 }
 
@@ -73,7 +73,7 @@ BlobStore.prototype.list = function (cb) {
     var key = path.relative(self.path, path.join(basedir, filename))
     // Skip tmp files
     if (key.endsWith(TMP_POSTFIX)) return next()
-    names.push(self._removeSubDirPrefix(key))
+    names.push(normalizeKey(self._removeSubDirPrefix(key)))
     next()
   }, function (err) {
     if (err && err.code === 'ENOENT') cb(null, [])
@@ -91,9 +91,18 @@ BlobStore.prototype._insertSubDirPrefix = function (key) {
 }
 
 BlobStore.prototype._removeSubDirPrefix = function (key) {
-  var prefixLen = this.subDirPrefixLen
   var parsed = path.parse(key)
   var dirs = parsed.dir.split(path.sep)
   dirs.pop()
   return path.join(dirs.join(path.sep), parsed.base)
+}
+
+// Converts a filepath with platform-specific separators to use only forward slashes
+function normalizeKey (key) {
+  return key.replace(new RegExp(path.sep, 'g'), '/')
+}
+
+// Converts a filepath containings forward slashes into platform-specific separators
+function denormalizeKey (key) {
+  return key.replace(new RegExp('/', 'g'), path.sep)
 }
