@@ -1,6 +1,6 @@
 {
   "name": "safe-fs-blob-store",
-  "description": "fs-blob-store with atomic writes and high file limits on windows",
+  "description": "fs-blob-store with atomic writes and deals with windows fs edge cases",
   "author": "Stephen Whitmore <sww@eight.net>",
   "version": "1.0.1",
   "repository": {
@@ -13,7 +13,14 @@
     "test": "tape test/*.js",
     "lint": "standard"
   },
-  "keywords": [],
+  "keywords": [
+    "windows",
+    "storage",
+    "blob",
+    "atomic",
+    "safe",
+    "transaction"
+  ],
   "dependencies": {
     "@digidem/atomic-fs-blob-store": "^5.3.0",
     "fs-walk": "0.0.1",
