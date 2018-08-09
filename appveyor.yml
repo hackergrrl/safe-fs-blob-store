@@ -19,7 +19,6 @@ install:
   - ps: Install-Product node $env:nodejs_version x64
   - npm install
 
-build_script:
+test_script:
   - npm test
 
-test: off
