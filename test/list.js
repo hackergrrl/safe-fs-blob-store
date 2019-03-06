@@ -1,6 +1,10 @@
 var test = require('tape')
+var blob = require('..')
+var path = require('path')
+var fs = require('fs')
 var from = require('from2-array')
 var Readable = require('stream').Readable
+var tmp = require('tempy')
 
 var common = require('./common')
 
@@ -76,4 +80,20 @@ test('list() doesn\'t list keys from failed writes', function (t) {
       })
     }
   })
+})
+
+test('don\'t show files in the root dir', function (t) {
+  var dir = tmp.directory()
+  fs.createWriteStream(path.join(dir, 'file.txt'))
+    .once('finish', check)
+    .end('hello')
+
+  function check () {
+    var store = blob(dir)
+    store.list(function (err, files) {
+      t.error(err)
+      t.deepEqual(files, [], 'no files')
+      t.end()
+    })
+  }
 })
