@@ -30,6 +30,7 @@
     "abstract-blob-store": "3.2.0",
     "concat-stream": "^1.6.2",
     "from2-array": "0.0.4",
+    "mkdirp": "^0.5.1",
     "standard": "~10.0.0",
     "tape": "~4.6.2",
     "tempy": "^0.2.1"

@@ -1,5 +1,6 @@
 var test = require('tape')
 var blob = require('..')
+var mkdirp = require('mkdirp')
 var path = require('path')
 var fs = require('fs')
 var from = require('from2-array')
@@ -93,6 +94,36 @@ test('don\'t show files in the root dir', function (t) {
     store.list(function (err, files) {
       t.error(err)
       t.deepEqual(files, [], 'no files')
+      t.end()
+    })
+  }
+})
+
+test('don\'t show files in a prefix subdir that don\'t match the prefix', function (t) {
+  var dir = tmp.directory()
+  mkdirp.sync(path.join(dir, '00'))
+  mkdirp.sync(path.join(dir, path.join('foo', 'far', 'fa')))
+
+  var store = blob(dir)
+
+  fs.createWriteStream(path.join(dir, '00', 'file.txt'))
+    .once('finish', check)
+    .end('hello')
+  fs.createWriteStream(path.join(dir, '00', '00001.txt'))
+    .once('finish', check)
+    .end('goodbye')
+  store.createWriteStream('foo/far/bax.txt', check).end('see ya')
+  fs.createWriteStream(path.join(dir, 'foo', 'far', 'fa', 'yo.txt'))
+    .once('finish', check)
+    .end('yoyo')
+
+  var pending = 4
+  function check () {
+    if (--pending) return
+
+    store.list(function (err, files) {
+      t.error(err)
+      t.deepEqual(files.sort(), ['00001.txt', 'foo/far/bax.txt'].sort(), '1 file')
       t.end()
     })
   }
