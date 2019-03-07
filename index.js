@@ -70,9 +70,16 @@ BlobStore.prototype.list = function (cb) {
   var names = []
   var self = this
   walk.files(this.path, function (basedir, filename, stat, next) {
+    if (basedir === self.path) return next() // skip files not in a prefix subdir
+
     var filepath = path.relative(self.path, path.join(basedir, filename))
-    // Skip tmp files
-    if (filepath.endsWith(TMP_POSTFIX)) return next()
+    if (filepath.endsWith(TMP_POSTFIX)) return next() // Skip tmp files
+
+    // Skip files that don't match the prefix subdir they are in
+    if (filename.substring(0, self.subDirPrefixLen) !== path.basename(basedir)) {
+      return next()
+    }
+
     names.push(self.filepathToKey(filepath))
     next()
   }, function (err) {
