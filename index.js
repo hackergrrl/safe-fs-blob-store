@@ -4,7 +4,7 @@ var AtomicStore = require('@digidem/atomic-fs-blob-store')
 var MurmurHash3 = require('imurmurhash')
 var inherits = require('util').inherits
 var path = require('path')
-var walk = require('fs-walk')
+var walk = require('folder-walker')
 
 var noop = function () {}
 
@@ -69,23 +69,31 @@ BlobStore.prototype.remove = function (opts, cb) {
 BlobStore.prototype.list = function (cb) {
   var names = []
   var self = this
-  walk.files(this.path, function (basedir, filename, stat, next) {
-    if (basedir === self.path) return next() // skip files not in a prefix subdir
+  var stream = walk(this.path)
+  stream.on('data', function (res) { //basedir, filename, stat, next) {
+    if (res.type !== 'file') return
+    var stat = res.stat
+    var basedir = path.dirname(res.filepath)
+    var filename = res.basename
+    if (basedir === self.path) return // skip files not in a prefix subdir
 
     var filepath = path.relative(self.path, path.join(basedir, filename))
-    if (filepath.endsWith(TMP_POSTFIX)) return next() // Skip tmp files
+    if (filepath.endsWith(TMP_POSTFIX)) return // Skip tmp files
 
     // Skip files that don't match the prefix subdir they are in
     if (filename.substring(0, self.subDirPrefixLen) !== path.basename(basedir)) {
-      return next()
+      return
     }
 
     names.push(self.filepathToKey(filepath))
-    next()
-  }, function (err) {
+  })
+
+  stream.once('end', done)
+  stream.once('error', done)
+  function done (err) {
     if (err && err.code === 'ENOENT') cb(null, [])
     else cb(err, names)
-  })
+  }
 }
 
 BlobStore.prototype._list = BlobStore.prototype.list
