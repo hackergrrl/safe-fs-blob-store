@@ -81,7 +81,8 @@ BlobStore.prototype.list = function (cb) {
     if (filepath.endsWith(TMP_POSTFIX)) return // Skip tmp files
 
     // Skip files that don't match the prefix subdir they are in
-    if (filename.substring(0, self.subDirPrefixLen) !== path.basename(basedir)) {
+    var simplename = path.parse(filename).name
+    if (simplename.substring(0, self.subDirPrefixLen) !== path.basename(basedir)) {
       return
     }
 
