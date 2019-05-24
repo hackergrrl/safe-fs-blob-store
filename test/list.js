@@ -9,6 +9,29 @@ var tmp = require('tempy')
 
 var common = require('./common')
 
+test('list() lists keys one key', function (t) {
+  common.setup(test, function (err, store) {
+    t.notOk(err, 'no setup err')
+    var ws = store.createWriteStream('foo.txt', onWrite)
+    ws.end('bar')
+
+    function onWrite (err, obj) {
+      t.error(err)
+      t.ok(obj.key, 'blob has key')
+      store.list(onList)
+    }
+
+    function onList (err, keys) {
+      t.error(err)
+      t.deepEqual(keys.sort(), ['foo.txt'], 'keys in list are correct')
+      common.teardown(test, store, null, function (err) {
+        t.error(err)
+        t.end()
+      })
+    }
+  })
+})
+
 test('list() lists keys', function (t) {
   common.setup(test, function (err, store) {
     t.notOk(err, 'no setup err')
