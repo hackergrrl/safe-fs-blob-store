@@ -2,7 +2,7 @@
   "name": "safe-fs-blob-store",
   "description": "fs-blob-store with atomic writes and deals with windows fs edge cases",
   "author": "Stephen Whitmore <sww@eight.net>",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "repository": {
     "url": "git://github.com/noffle/safe-fs-blob-store.git"
   },
