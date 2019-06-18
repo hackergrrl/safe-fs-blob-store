@@ -24,7 +24,6 @@
   "dependencies": {
     "@digidem/atomic-fs-blob-store": "^5.3.0",
     "folder-walker": "^3.2.0",
-    "fs-walk": "0.0.1",
     "imurmurhash": "^0.1.4"
   },
   "devDependencies": {
